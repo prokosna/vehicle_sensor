@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[scripts]
+start = "python -m vehicle_sensor.app"
+format = "autopep8 -ivr vehicle_sensor"
+lint = "flake8 --show-source vehicle_sensor"
+
+[dev-packages]
+
+[packages]
+autopep8 = "*"
+flake8 = "*"
+configargparse = "*"
+paho-mqtt = "*"
+
+[requires]
+python_version = "3.7"
