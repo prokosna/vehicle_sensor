@@ -1,19 +1,19 @@
 import json
 from abc import ABCMeta, abstractmethod
+from typing import Dict
 
 
 class Telemetry:
-    def __init__(self, app_state, noise, temperature, vibration, timestamp):
+    def __init__(self, app_state, timestamp, sensor_values: Dict):
         self.app_state = app_state
-        self.noise = noise
-        self.temperature = temperature
-        self.vibration = vibration
         self.timestamp = timestamp
+        self.sensor_values = sensor_values
 
     def to_json(self):
-        d = {"vehicle_id": self.app_state.vehicle_id, "noise": self.noise, "temperature": self.temperature,
-             "vibration": self.vibration, "created_at": self.timestamp.isoformat()}
-        return json.dumps(d.__dict__)
+        payload = {**{"vehicle_id": self.app_state.vehicle_id,
+                      "created_at": self.timestamp.isoformat()},
+                   **self.sensor_values}
+        return json.dumps(payload.__dict__)
 
 
 class TelemetrySender(metaclass=ABCMeta):

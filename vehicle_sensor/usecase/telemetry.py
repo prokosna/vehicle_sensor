@@ -1,18 +1,19 @@
 from vehicle_sensor.domain.app_state import AppStatus, AppStateRepository
-from vehicle_sensor.domain.noise_sensor import NoiseSensor
+from vehicle_sensor.domain.sensor import Sensor
 from vehicle_sensor.domain.telemetry_sender import Telemetry, TelemetrySender
-from vehicle_sensor.domain.temperature_sensor import TemperatureSensor
-from vehicle_sensor.domain.vibration_sensor import VibrationSensor
+from typing import Sequence
+from logging import getLogger
+
+
+logger = getLogger(__name__)
 
 
 class TelemetryUsecase:
-    def __init__(self, app_state_repo: AppStateRepository, noise_sensor: NoiseSensor,
-                 temperature_sensor: TemperatureSensor, vibration_sensor: VibrationSensor,
+    def __init__(self, app_state_repo: AppStateRepository,
+                 sensors: Sequence[Sensor],
                  telemetry_sender: TelemetrySender):
         self.app_state_repo = app_state_repo
-        self.noise_sensor = noise_sensor
-        self.temperature_sensor = temperature_sensor
-        self.vibration_sensor = vibration_sensor
+        self.sensors = sensors
         self.telemetry_sender = telemetry_sender
 
     def send_telemetries(self, timestamp):
@@ -20,9 +21,9 @@ class TelemetryUsecase:
         if state.vehicle_id is None or state.status == AppStatus.STOPPED:
             return
 
-        noise = self.noise_sensor.fetch()
-        temp = self.temperature_sensor.fetch()
-        vib = self.vibration_sensor.fetch()
+        sensor_values = {}
+        for sensor in self.sensors:
+            sensor_values.update(sensor.fetch())
 
-        telemetry = Telemetry(state, noise, temp, vib, timestamp)
+        telemetry = Telemetry(state, timestamp, sensor_values)
         self.telemetry_sender.send(telemetry)
