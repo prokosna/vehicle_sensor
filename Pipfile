@@ -13,8 +13,6 @@ lint = "flake8 --show-source vehicle_sensor"
 [packages]
 autopep8 = "*"
 flake8 = "*"
-configargparse = "*"
-paho-mqtt = "*"
 
 [requires]
 python_version = "3.7"
